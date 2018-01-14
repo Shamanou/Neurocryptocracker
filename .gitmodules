@@ -1,3 +1,0 @@
-[submodule "scraper"]
-	path = scraper
-	url = https://github.com/Shamanou/cryptocoincharts-scraper.git
