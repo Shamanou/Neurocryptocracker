@@ -2,27 +2,22 @@
 
 import json
 from tgym.envs import SpreadTrading
-from tgym.gens import CSVStreamer
 from dqnagent import DQNAgent
 from datetime import timedelta
 import sys
 import os.path
-
+import numpy as np
+from generator import CSVStreamer
 market = sys.argv[1]
-
-def daterange(start_date, end_date):
-    for n in range(int ((end_date - start_date).days)):
-        yield start_date + timedelta(n)
-data = []
 
 # from generators.tickergenerator import TickerGenerator
 # Instantiating the environmnent
 generator = CSVStreamer(filename="data/"+market+"-history.csv")
-episodes =3800
-episode_length = 400
+episodes =7600
+episode_length = 200
 trading_fee = .2
 time_fee = 0
-history_length = 2
+history_length = 5
 
 environment = SpreadTrading(spread_coefficients=[1],
                                 data_generator=generator,
@@ -61,13 +56,13 @@ if not os.path.isfile("./model."+market+".h5" ):
     # Training the agent
     for ep in range(episodes):
         state = environment.reset()
-        rew = 0
+        rew = np.float64(0)
         for _ in range(episode_length):
             action = agent.act(state)
             next_state, reward, done, _ = environment.step(action)
             loss = agent.observe(state, action, reward, next_state, done)
             state = next_state
-            rew += reward
+            rew += np.float64(reward)
         if loss:
             print("Ep:" + str(ep)
               + "| rew:" + str(round(rew, 2))

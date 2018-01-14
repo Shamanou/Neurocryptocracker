@@ -12,8 +12,8 @@ class Generator(DataGenerator):
     @staticmethod
     def _generator(market):
         while True:
-            y = requests.get("https://api.kraken.com/0/public/Ticker/BTC/"+market)
+            y = requests.get("https://cex.io/api/tickers/BTC/"+market)
             if y.status_code == 200:
-                y = y.json()
+                y = y.json()['data'][0]
                 yield float(y[u'bid']), float(y[u'ask'])
             
