@@ -30,15 +30,17 @@ if __name__ == "__main__":
     client = Client("https://api.hitbtc.com")
     current_time = datetime.datetime.now()
     days = 0
+    bucket = 0
     symbols = client.get_symbol('')
     while days <= 30:
         for symbol in symbols:
             symbol_id = symbol['id']
             ticker = client.get_ticker(symbol_id)
-            ticker['bucket'] = days
+            ticker['bucket'] = bucket
             tickers.insert_one(ticker)
             del ticker['_id']
             print "inserted " + json.dumps(ticker)
-        time.sleep(30)
+        time.sleep(60)
         delta = current_time - datetime.datetime.now()
         days = delta.days
+        bucket = delta.seconds
