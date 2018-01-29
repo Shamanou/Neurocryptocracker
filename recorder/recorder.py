@@ -35,6 +35,7 @@ if __name__ == "__main__":
         for symbol in symbols:
             symbol_id = symbol['id']
             ticker = client.get_ticker(symbol_id)
+            ticker['bucket'] = days
             tickers.insert_one(ticker)
             del ticker['_id']
             print "inserted " + json.dumps(ticker)
