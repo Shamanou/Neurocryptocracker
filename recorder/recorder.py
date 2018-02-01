@@ -24,6 +24,7 @@ class Client(object):
     def get_ticker(self, symbol_code):
         return self.session.get("%s/public/ticker/%s" % (self.url, symbol_code)).json()
 
+
 if __name__ == "__main__":
     mongoClient = MongoClient()
     tickers = mongoClient['hitbtc']['tickers']
@@ -34,13 +35,20 @@ if __name__ == "__main__":
     symbols = client.get_symbol('')
     while days <= 30:
         for symbol in symbols:
+            ticker = None
             symbol_id = symbol['id']
-            ticker = client.get_ticker(symbol_id)
-            ticker['bucket'] = bucket
-            tickers.insert_one(ticker)
-            del ticker['_id']
-            print "inserted " + json.dumps(ticker)
-        time.sleep(60)
+            while not ticker:
+                try:
+                    ticker = client.get_ticker(symbol_id)
+                    ticker['bucket'] = bucket
+                    tickers.insert_one(ticker)
+                    del ticker['_id']
+                    print "inserted " + json.dumps(ticker)
+                    break
+                except:
+                    pass
+
+        time.sleep(30)
         delta = current_time - datetime.datetime.now()
         days = delta.days
-        bucket = delta.seconds
+        bucket += 1
